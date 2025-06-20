@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
 
+import './App.css';
+import { Route, Routes } from 'react-router-dom';
+
+import { SharedLayout } from './SharedLayout';
+import { lazy } from 'react';
+import RestrictedRoute from './RestrictedRoute';
+import { PrivateRoute } from './PrivetRoute';
+
+const HomePage = lazy(() => import('./pages/Home'));
+const LoginPage = lazy(() => import('./pages/Login'));
+const TaskPage = lazy(() => import('./pages/Task'));
+const RegisterPage = lazy(() => import('./pages/Register'));
 function App() {
-  const [count, setCount] = useState(0)
+  // const [count, setCount] = useState(0);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <SharedLayout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route
+          path="tasks"
+          element={
+            <PrivateRoute redirectPath="/login" Component={<TaskPage />} />
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <RestrictedRoute redirectPath="/tasks" Component={<LoginPage />} />
+          }
+        />
+        <Route
+          path="register"
+          element={
+            <RestrictedRoute
+              redirectPath="/tasks"
+              Component={<RegisterPage />}
+            />
+          }
+        />
+      </Routes>
+    </SharedLayout>
+  );
 }
 
-export default App
+export default App;
